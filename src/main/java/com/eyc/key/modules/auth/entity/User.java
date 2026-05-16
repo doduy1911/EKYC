@@ -1,5 +1,6 @@
 package com.eyc.key.modules.auth.entity;
 
+import com.eyc.key.common.enums.Role;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -38,6 +39,10 @@ public class User {
 
     @Column(name = "address" , nullable = false , length = 500)
     private String address;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "role", nullable = false)
+    private Role role;
 
 
 
