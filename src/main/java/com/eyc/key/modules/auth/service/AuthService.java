@@ -83,7 +83,9 @@ public class AuthService {
     }
 
 
-//    private
+    private AuthResponse buildAuthResponse(User user , String deviceInfo , String ipAddress){
+        return null;
+    }
     private User findUserByUsername(String username){
         return userRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("Người dùng không tồn tại"));
     }
