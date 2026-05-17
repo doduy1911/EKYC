@@ -38,7 +38,8 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@Valid @RequestBody LoginRequest loginRequest){
-
+        authService.login(loginRequest);
+        return ResponseEntity.ok(Map.of("message","Đăng Nhập Thành Công"));
     }
 
 }

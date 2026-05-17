@@ -6,11 +6,12 @@ import lombok.Data;
 
 @Data
 public class LoginRequest {
-    @NotBlank(message = "Username không được để trống ")
-    @Size(min = 8)
-    private String Username;
 
-    @NotBlank(message = "Mật Khẩu không được để trống ")
-    @Size(min = 8)
-    private String Password;
+    @NotBlank(message = "Username không được trống")
+    private String username;
+
+    @NotBlank(message = "Mật khẩu không được trống")
+    private String password;
+
+    private String deviceInfo;
 }
