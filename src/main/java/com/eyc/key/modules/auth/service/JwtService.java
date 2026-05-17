@@ -50,14 +50,14 @@ public class JwtService {
                 .getBody();
     }
 
-    private  String extractUsername(String token){
+    public   String extractUsername(String token){
         return extractAllclaims(token).getSubject();
     }
     private boolean isTokenExpired(String token){
         return extractAllclaims(token).getExpiration().before(new Date());
     }
 
-    private boolean isTokenValid(String token , User user){
+    public boolean isTokenValid(String token , User user){
         try {
             String username = extractUsername(token);
             return username.equals(user.getUsername()) && !isTokenExpired(token);
