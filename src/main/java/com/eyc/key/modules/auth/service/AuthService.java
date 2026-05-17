@@ -3,9 +3,8 @@ package com.eyc.key.modules.auth.service;
 import com.eyc.key.common.enums.OtpType;
 import com.eyc.key.common.enums.Role;
 import com.eyc.key.common.enums.UserStatus;
-import com.eyc.key.modules.auth.dto.ResgisterRequest;
-import com.eyc.key.modules.auth.dto.VerifyOtpRequest;
-import com.eyc.key.modules.auth.entity.OtpVerification;
+import com.eyc.key.modules.auth.dto.request.ResgisterRequest;
+import com.eyc.key.modules.auth.dto.request.VerifyOtpRequest;
 import com.eyc.key.modules.auth.entity.User;
 import com.eyc.key.modules.auth.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -75,9 +74,13 @@ public class AuthService {
         log.info("User verified: {}", user.getUsername());
     }
 
+
+
     private User findUserByUsername(String username){
         return userRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("Người dùng không tồn tại"));
     }
+
+
 
 
 
