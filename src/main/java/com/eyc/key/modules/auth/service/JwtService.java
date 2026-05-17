@@ -67,7 +67,7 @@ public class JwtService {
         }
     }
 
-    private long  getAccessTokenExpiration(){
+    public long  getAccessTokenExpiration(){
         return accessTokenExpiration / 1000;
     }
 

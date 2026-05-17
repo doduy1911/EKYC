@@ -90,13 +90,11 @@ public class User implements UserDetails {
         return password;
     }
     @Override
-    public boolean isAccountNonLocked(){
-        if(lockedUntil == null && LocalDateTime.now().isBefore(lockedUntil)){
+    public boolean isAccountNonLocked() {
+        if (lockedUntil != null && LocalDateTime.now().isBefore(lockedUntil)) {
             return false;
         }
-        else {
-            return status != UserStatus.LOCKED && status != UserStatus.SUSPENDED;
-        }
+        return status != UserStatus.LOCKED && status != UserStatus.SUSPENDED;
     }
 
     @Override
