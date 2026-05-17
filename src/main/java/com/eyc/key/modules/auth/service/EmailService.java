@@ -20,7 +20,7 @@ public class EmailService {
     @Value("${otp.expiration-minutes:5}")
     private int otpExpirationMinutes;
 
-//    @Async
+    @Async
     public void sendOtpEmail(String toEmail, String fullName , String otp , OtpType type) {
         try {
             MimeMessage message = mailSender.createMimeMessage();
