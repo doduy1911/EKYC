@@ -4,6 +4,7 @@ import com.eyc.key.common.enums.OtpType;
 import com.eyc.key.common.enums.Role;
 import com.eyc.key.common.enums.UserStatus;
 import com.eyc.key.modules.auth.dto.ResgisterRequest;
+import com.eyc.key.modules.auth.entity.OtpVerification;
 import com.eyc.key.modules.auth.entity.User;
 import com.eyc.key.modules.auth.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -40,13 +41,29 @@ public class AuthService {
                 .role(Role.USER)
                 .status(UserStatus.PENDING_VERIFICATION)
                 .build();
-//        userRepository.save(user);
+        userRepository.save(user);
 
         otpService.sendOtp(user,OtpType.REGISTER);
-
-
-
+        log.info("User registered: {}", user.getUsername());
     }
+
+    @Transactional
+    public void resendOtp(String username) {
+        System.out.println(username);
+        User user = findUserByUsername(username);
+        System.out.println(user);
+
+        if (user.getStatus() != UserStatus.PENDING_VERIFICATION) {
+            throw new RuntimeException("Tài khoản đã được xác thực");
+        }
+
+        otpService.sendOtp(user, OtpType.REGISTER);
+    }
+
+    private User findUserByUsername(String username){
+        return userRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("Người dùng không tồn tại"));
+    }
+
 
 
 

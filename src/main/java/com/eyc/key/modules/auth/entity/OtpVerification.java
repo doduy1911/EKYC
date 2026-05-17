@@ -16,7 +16,7 @@ import java.util.UUID;
 @Builder
 @Table(name = "otp_verification" , indexes = {
         @Index(name="idex_otp_eamil" , columnList="email"),
-        @Index(name = "idex_otp_user",columnList = "user")
+        @Index(name = "idex_otp_userID",columnList = "userId")
 })
 public class OtpVerification {
     @Id

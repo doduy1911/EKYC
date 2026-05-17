@@ -5,10 +5,9 @@ import com.eyc.key.modules.auth.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import jakarta.validation.Valid;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -22,4 +21,11 @@ public class AuthController {
         return ResponseEntity.ok().build();
 
     }
+
+    @PostMapping("/resend-otp/{username}")
+    public ResponseEntity<?> resendOtp(@PathVariable String username) {
+        authService.resendOtp(username);
+        return ResponseEntity.ok(Map.of("message", "OTP mới đã được gửi đến email của bạn."));
+    }
+
 }

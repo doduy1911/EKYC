@@ -25,4 +25,6 @@ public interface UserRepository  extends JpaRepository<User, Long> {
     @Modifying
     @Query("update User u set u.failedLoginAttempts = 0 , u.lockedUntil = null where u.userId = :userId")
     void resetFailedAttempts(UUID userId);
- }
+
+    User findUserByUsername(String username);
+}
