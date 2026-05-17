@@ -14,7 +14,7 @@ import java.util.UUID;
 public interface OtpRepository extends JpaRepository<OtpVerification, UUID> {
     @Query("""
         select o from OtpVerification o
-            where o.user.userId = :userid
+            where o.user.userId = :userId
                 and o.otpType = :type
                 and o.verified = false 
                 and o.expiresAt > CURRENT_TIMESTAMP 

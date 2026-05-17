@@ -1,6 +1,7 @@
 package com.eyc.key.modules.auth.controller;
 
 import com.eyc.key.modules.auth.dto.ResgisterRequest;
+import com.eyc.key.modules.auth.dto.VerifyOtpRequest;
 import com.eyc.key.modules.auth.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -29,8 +30,9 @@ public class AuthController {
     }
 
     @PostMapping("verify-otp/{username}")
-    public ResponseEntity<?> verifyOtp(@PathVariable String username){
-
+    public ResponseEntity<?> verifyOtp(@PathVariable String username , @Valid @RequestBody VerifyOtpRequest otpRequest){
+        authService.verifyRegistrationOtp(username, otpRequest);
+        return ResponseEntity.ok(Map.of("message","Xác Thực Tài Khoản Thành Công , Bạn có thể đăng nhập"));
     }
 
 }

@@ -50,6 +50,31 @@ public class OtpService {
 
     }
 
+    @Transactional
+    public boolean verifyOtp(User user , String rawOtp , OtpType otpType){
+        OtpVerification otp = otpRepository
+                .findLatestValidOtp(user.getUserId(),otpType)
+                .orElseThrow(() -> new RuntimeException("OTP không tồn tài hoặc đã hết hạn"));
+
+        if (!otp.isUsable()){
+            throw new RuntimeException("OTP này đã được sử dụng");
+        }
+
+        otp.setAttempts(otp.getAttempts() + 1);
+
+        if (!passwordEncoder.matches(rawOtp,otp.getOtpHash())){
+            otpRepository.save(otp);
+            int remaining = otp.getMaxAttempts() - otp.getAttempts();
+            throw new RuntimeException("Số lần thử còn lại là {}"+ remaining);
+        }
+
+        otp.setVerified(true);
+        otp.setVerifiedAt(LocalDateTime.now());
+        otpRepository.save(otp);
+
+        return true;
+    }
+
     private String generateOtp(){
         int otp = 100000 + SECURE_RANDOM.nextInt(900000);
         return String.valueOf(otp);

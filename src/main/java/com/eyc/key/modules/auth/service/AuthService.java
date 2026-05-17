@@ -4,6 +4,7 @@ import com.eyc.key.common.enums.OtpType;
 import com.eyc.key.common.enums.Role;
 import com.eyc.key.common.enums.UserStatus;
 import com.eyc.key.modules.auth.dto.ResgisterRequest;
+import com.eyc.key.modules.auth.dto.VerifyOtpRequest;
 import com.eyc.key.modules.auth.entity.OtpVerification;
 import com.eyc.key.modules.auth.entity.User;
 import com.eyc.key.modules.auth.repository.UserRepository;
@@ -61,8 +62,17 @@ public class AuthService {
     }
 
     @Transactional
-    public void verifyRegistrationOtp(String  username) {
+    public void verifyRegistrationOtp(String  username, VerifyOtpRequest otp) {
+        User user  = findUserByUsername(username);
+        if (user.getStatus() != UserStatus.PENDING_VERIFICATION) {
+            throw new RuntimeException("Tài Khoản đã đưpọc xác thực");
+        }
 
+        otpService.verifyOtp(user,otp.getOtp(),OtpType.REGISTER);
+
+        user.setStatus(UserStatus.ACTIVE);
+        userRepository.save(user);
+        log.info("User verified: {}", user.getUsername());
     }
 
     private User findUserByUsername(String username){
