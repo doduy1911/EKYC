@@ -28,4 +28,9 @@ public class AuthController {
         return ResponseEntity.ok(Map.of("message", "OTP mới đã được gửi đến email của bạn."));
     }
 
+    @PostMapping("verify-otp/{username}")
+    public ResponseEntity<?> verifyOtp(@PathVariable String username){
+
+    }
+
 }

@@ -60,9 +60,15 @@ public class AuthService {
         otpService.sendOtp(user, OtpType.REGISTER);
     }
 
+    @Transactional
+    public void verifyRegistrationOtp(String  username) {
+
+    }
+
     private User findUserByUsername(String username){
         return userRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("Người dùng không tồn tại"));
     }
+
 
 
 
