@@ -1,5 +1,6 @@
 package com.eyc.key.modules.auth.service;
 
+import com.eyc.key.common.enums.OtpType;
 import com.eyc.key.common.enums.Role;
 import com.eyc.key.common.enums.UserStatus;
 import com.eyc.key.modules.auth.dto.ResgisterRequest;
@@ -17,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final OtpService otpService;
 
     @Transactional
     public void register(ResgisterRequest resgisterRequest){
@@ -34,11 +36,13 @@ public class AuthService {
                 .password(passwordEncoder.encode(resgisterRequest.getPassword()))
                 .full_name(resgisterRequest.getFullName())
                 .phone_number(resgisterRequest.getPhoneNumber())
+                .address(resgisterRequest.getAddress())
                 .role(Role.USER)
                 .status(UserStatus.PENDING_VERIFICATION)
                 .build();
 //        userRepository.save(user);
 
+        otpService.sendOtp(user,OtpType.REGISTER);
 
 
 
