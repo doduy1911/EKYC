@@ -1,6 +1,8 @@
 package com.eyc.key.modules.auth.service;
 
 import com.eyc.key.common.enums.OtpType;
+import com.eyc.key.common.exception.OtpVerifyException;
+import com.eyc.key.modules.auth.dto.response.OtpResponse;
 import com.eyc.key.modules.auth.entity.OtpVerification;
 import com.eyc.key.modules.auth.entity.User;
 import com.eyc.key.modules.auth.repository.OtpRepository;
@@ -50,14 +52,14 @@ public class OtpService {
 
     }
 
-    @Transactional
-    public boolean verifyOtp(User user , String rawOtp , OtpType otpType){
+    @Transactional(noRollbackFor = OtpVerifyException.class)
+    public OtpResponse verifyOtp(User user , String rawOtp , OtpType otpType){
         OtpVerification otp = otpRepository
                 .findLatestValidOtp(user.getUserId(),otpType)
-                .orElseThrow(() -> new RuntimeException("OTP không tồn tài hoặc đã hết hạn"));
+                .orElseThrow(() -> OtpVerifyException.business("OTP không tồn tài hoặc đã hết hạn",0));
 
         if (!otp.isUsable()){
-            throw new RuntimeException("OTP này đã được sử dụng");
+            throw OtpVerifyException.business("OTP này đã được sử dụng",0);
         }
 
         otp.setAttempts(otp.getAttempts() + 1);
@@ -65,14 +67,14 @@ public class OtpService {
         if (!passwordEncoder.matches(rawOtp,otp.getOtpHash())){
             otpRepository.save(otp);
             int remaining = otp.getMaxAttempts() - otp.getAttempts();
-            throw new RuntimeException("Số lần thử còn lại là {}"+ remaining);
+            throw OtpVerifyException.business("Số lần thử còn lại là :"+ remaining , remaining );
         }
 
         otp.setVerified(true);
         otp.setVerifiedAt(LocalDateTime.now());
         otpRepository.save(otp);
 
-        return true;
+        return OtpResponse.success("Xác thực thành công ");
     }
 
     private String generateOtp(){

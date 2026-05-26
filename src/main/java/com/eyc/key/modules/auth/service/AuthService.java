@@ -3,10 +3,12 @@ package com.eyc.key.modules.auth.service;
 import com.eyc.key.common.enums.OtpType;
 import com.eyc.key.common.enums.Role;
 import com.eyc.key.common.enums.UserStatus;
+import com.eyc.key.common.exception.OtpVerifyException;
 import com.eyc.key.modules.auth.dto.request.LoginRequest;
 import com.eyc.key.modules.auth.dto.request.ResgisterRequest;
 import com.eyc.key.modules.auth.dto.request.VerifyOtpRequest;
 import com.eyc.key.modules.auth.dto.response.AuthResponse;
+import com.eyc.key.modules.auth.dto.response.OtpResponse;
 import com.eyc.key.modules.auth.entity.RefreshToken;
 import com.eyc.key.modules.auth.entity.User;
 import com.eyc.key.modules.auth.repository.RefreshTokenRepository;
@@ -63,30 +65,33 @@ public class AuthService {
     }
 
     @Transactional
-    public void resendOtp(String username) {
-        System.out.println(username);
+    public OtpResponse resendOtp(String username) {
         User user = userService.findUserByUsername(username);
-        System.out.println(user);
 
         if (user.getStatus() != UserStatus.PENDING_VERIFICATION) {
-            throw new RuntimeException("Tài khoản đã được xác thực");
+            throw OtpVerifyException.business("Tài khoản đã được xác thực",0);
         }
 
         otpService.sendOtp(user, OtpType.REGISTER);
+        return OtpResponse.success("Vui Lòng Kiểm tra email của bạn ");
     }
 
-    @Transactional
-    public void verifyRegistrationOtp(String  username, VerifyOtpRequest otp) {
-        User user  = userService.findUserByUsername(username);
+    @Transactional(noRollbackFor = OtpVerifyException.class)
+    public OtpResponse verifyRegistrationOtp(String username, VerifyOtpRequest otp) {
+
+        User user = userService.findUserByUsername(username);
+
         if (user.getStatus() != UserStatus.PENDING_VERIFICATION) {
-            throw new RuntimeException("Tài Khoản đã đưpọc xác thực");
+            throw OtpVerifyException.business("Tài khoản đã được xác thực", 0);
         }
 
-        otpService.verifyOtp(user,otp.getOtp(),OtpType.REGISTER);
+        OtpResponse result = otpService.verifyOtp(user, otp.getOtp(), OtpType.REGISTER);
 
         user.setStatus(UserStatus.ACTIVE);
         userRepository.save(user);
         log.info("User verified: {}", user.getUsername());
+
+        return result;
     }
 
     @Transactional

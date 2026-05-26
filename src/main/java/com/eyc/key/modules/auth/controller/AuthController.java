@@ -3,6 +3,7 @@ package com.eyc.key.modules.auth.controller;
 import com.eyc.key.modules.auth.dto.request.LoginRequest;
 import com.eyc.key.modules.auth.dto.request.ResgisterRequest;
 import com.eyc.key.modules.auth.dto.request.VerifyOtpRequest;
+import com.eyc.key.modules.auth.dto.response.OtpResponse;
 import com.eyc.key.modules.auth.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -20,20 +21,25 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<?> register(@Valid @RequestBody ResgisterRequest resgisterRequest){
         authService.register(resgisterRequest);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(Map.of("message","OTP đã được gửi đi "));
 
     }
 
     @PostMapping("/resend-otp/{username}")
-    public ResponseEntity<?> resendOtp(@PathVariable String username) {
-        authService.resendOtp(username);
-        return ResponseEntity.ok(Map.of("message", "OTP mới đã được gửi đến email của bạn."));
+    public ResponseEntity<OtpResponse> resendOtp(@PathVariable String username) {
+        OtpResponse result = authService.resendOtp(username);
+        return ResponseEntity.ok(result);
     }
 
+
+
     @PostMapping("verify-otp/{username}")
-    public ResponseEntity<?> verifyOtp(@PathVariable String username , @Valid @RequestBody VerifyOtpRequest otpRequest){
-        authService.verifyRegistrationOtp(username, otpRequest);
-        return ResponseEntity.ok(Map.of("message","Xác Thực Tài Khoản Thành Công , Bạn có thể đăng nhập"));
+    public ResponseEntity<OtpResponse> verifyOtp(
+            @PathVariable String username,
+            @Valid @RequestBody VerifyOtpRequest otpRequest) {
+
+        OtpResponse result = authService.verifyRegistrationOtp(username, otpRequest);
+        return ResponseEntity.ok(result);
     }
 
     @PostMapping("/login")
