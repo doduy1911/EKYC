@@ -1,0 +1,22 @@
+package com.eyc.key.common.audit;
+
+public enum AuditAction {
+    REGISTER,
+    LOGIN_SUCCESS,
+    LOGIN_FAILED,
+    RESEND_OTP,
+    VERIFY_OTP_SUCCESS,
+    VERIFY_OTP_FAILED,
+    LOGOUT,
+
+
+    KYC_SUBMITTED,
+    KYC_APPROVED,
+    KYC_REJECTED,
+    KYC_RESUBMIT_REQUIRED,
+
+    ACCOUNT_OPENED,
+    ACCOUNT_FROZEN,
+    ACCOUNT_UNFROZEN
+
+}
