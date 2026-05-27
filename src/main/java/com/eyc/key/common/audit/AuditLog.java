@@ -1,0 +1,55 @@
+package com.eyc.key.common.audit;
+
+import java.time.LocalDate;
+import java.util.UUID;
+
+import org.springframework.data.annotation.CreatedDate;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Index;
+import jakarta.persistence.Table;
+
+@Entity
+@Table(name = "audit_logs" , indexes = {
+    @Index(name = "idx_audit_userId" , columnList = "userId"),
+    @Index(name = "idx_audit_action" , columnList = "action"),
+    @Index(name = "idx_audit_createAt" , columnList = "createAt")
+})
+public class AuditLog {
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
+
+    @Column(name = "userId")
+    private UUID userId;
+    
+    @Column(name = "username" ,length = 50)
+    private String username;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "action" , length = 50 , nullable = false)
+    private AuditAction action;
+
+    @Column(name = "sucess" , nullable = false)
+    private boolean sucess;
+
+    @Column(name = "description" , nullable = false)
+    private String description;
+
+    @Column(name = "ip_address" , length = 45 )
+    private String ipAddress;
+
+    @Column(name = "user_agen" , length = 255)
+    private String userAgent;
+
+    @CreatedDate
+    @Column(name = "created_at" ,updatable = false)
+    private LocalDate createAt;
+
+}
