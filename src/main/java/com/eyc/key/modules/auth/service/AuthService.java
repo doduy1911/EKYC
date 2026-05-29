@@ -39,7 +39,7 @@ public class AuthService {
 
 
     @Transactional
-    public void register(ResgisterRequest resgisterRequest){
+    public OtpResponse register(ResgisterRequest resgisterRequest){
         String username = resgisterRequest.getUsername();
         if (userRepository.findByUsername(username).isPresent()){
             throw new RuntimeException("Username đã tồn tại");
@@ -62,6 +62,7 @@ public class AuthService {
 
         otpService.sendOtp(user,OtpType.REGISTER);
         log.info("User registered: {}", user.getUsername());
+        return OtpResponse.success("Otp đã được gửi đi ");
     }
 
     @Transactional

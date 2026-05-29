@@ -19,9 +19,9 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@Valid @RequestBody ResgisterRequest resgisterRequest){
-        authService.register(resgisterRequest);
-        return ResponseEntity.ok(Map.of("message","OTP đã được gửi đi "));
+    public ResponseEntity<OtpResponse> register(@Valid @RequestBody ResgisterRequest resgisterRequest){
+        OtpResponse result =  authService.register(resgisterRequest);
+        return ResponseEntity.ok(result);
 
     }
 

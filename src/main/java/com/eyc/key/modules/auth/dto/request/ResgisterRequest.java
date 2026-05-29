@@ -30,6 +30,7 @@ public class ResgisterRequest {
     @Pattern(regexp = "^(\\+84|0)[0-9]{9}$", message = "Số điện thoại không hợp lệ")
     private String phoneNumber;
 
+    @NotBlank(message = "Địa chỉ không được để trống ")
     private String address;
 
 }
