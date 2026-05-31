@@ -59,7 +59,7 @@ public class AuditLog {
     @Column(name = "ip_address" , length = 45 )
     private String ipAddress;
 
-    @Column(name = "user_agen" , length = 255)
+    @Column(name = "user_agent" , length = 255)
     private String userAgent;
 
     @CreatedDate
