@@ -1,6 +1,7 @@
 package com.eyc.key.common.audit;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import lombok.*;
@@ -61,7 +62,7 @@ public class AuditLog {
 
     @CreatedDate
     @Column(name = "created_at" ,updatable = false)
-    private LocalDate createdAt;
+    private LocalDateTime createdAt;
 
 
 }

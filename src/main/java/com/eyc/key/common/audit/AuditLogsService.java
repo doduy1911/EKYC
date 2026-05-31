@@ -26,23 +26,21 @@ public class AuditLogsService {
                     String username,
                     AuditAction auditAction,
                     boolean success,
+                    String ipAddress,
+                    String userAgen,
                     String description){
-        String ipAddress = extractIpAddress();
-        String userAgen = extractUserAgent();
 
         AuditLog auditLog = AuditLog.builder()
                 .userId(userId)
                 .username(username)
                 .action(auditAction)
                 .success(success)
-                .description(description)
                 .ipAddress(ipAddress)
                 .userAgent(userAgen)
+                .description(description)
                 .build();
         System.out.println(auditLog);
         auditLogRepository.save(auditLog);
-        System.out.println("lưu thành cồng");
-
     }
 
     @Async
@@ -50,39 +48,10 @@ public class AuditLogsService {
     public void log(String username,
                     AuditAction action,
                     boolean success,
+                    String ipAddress,
+                    String userAgen,
                     String description) {
-        log(null,username, action, success, description);
+        log(null,username, action, success , ipAddress, userAgen ,description);
     }
 
-
-    private String extractIpAddress(){
-        try {
-            ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
-            System.out.println("abc "+attrs);
-            if (attrs == null) return "unknown";
-            HttpServletRequest request = attrs.getRequest();
-            String forwarded = request.getHeader("x-forwarded-for");
-
-            if (forwarded == null && !forwarded.isEmpty()){
-                return forwarded.split(",")[0].trim();
-            }
-            return request.getRemoteAddr();
-        }catch (Exception e){
-            return "unknown";
-        }
-    }
-
-    private String extractUserAgent(){
-        try {
-            ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
-            if (attrs == null) return "unknown";
-            String userAgent = attrs.getRequest().getHeader("User-Agent");
-            if (userAgent == null) return "unknown";
-            return userAgent.length() > 255
-                    ? userAgent.substring(0, 255)
-                    : userAgent;
-        } catch (Exception e) {
-            return "unknown";
-        }
-    }
 }

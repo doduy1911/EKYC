@@ -6,6 +6,7 @@ import com.eyc.key.common.enums.OtpType;
 import com.eyc.key.common.enums.Role;
 import com.eyc.key.common.enums.UserStatus;
 import com.eyc.key.common.exception.OtpVerifyException;
+import com.eyc.key.common.util.RequestUtils;
 import com.eyc.key.modules.auth.dto.request.LoginRequest;
 import com.eyc.key.modules.auth.dto.request.ResgisterRequest;
 import com.eyc.key.modules.auth.dto.request.VerifyOtpRequest;
@@ -39,16 +40,21 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final UserService  userService;
     private final AuditLogsService  auditLogsService;
+    private final RequestUtils  requestUtils;
 
 
     @Transactional
     public OtpResponse register(ResgisterRequest resgisterRequest){
         String username = resgisterRequest.getUsername();
+        String ipAddress = requestUtils.extractIpAddress();
+        String userAgen = requestUtils.extractUserAgent();
         if (userRepository.findByUsername(username).isPresent()){
             auditLogsService.log(
                     username,
                     AuditAction.REGISTER,
                     false,
+                    ipAddress,
+                    userAgen,
                     "Username đã tồn tại "
             );
             throw new RuntimeException("Username đã tồn tại");
@@ -58,7 +64,9 @@ public class AuthService {
             auditLogsService.log(
                     username,
                     AuditAction.REGISTER,
-                    true,
+                    false,
+                    ipAddress,
+                    userAgen,
                     "Email đã tồn tại "
             );
             throw  new RuntimeException("Email đã tồn tại");
@@ -81,7 +89,9 @@ public class AuthService {
                 user.getUserId(),
                 username,
                 AuditAction.REGISTER,
-                false,
+                true,
+                ipAddress,
+                userAgen,
                 "Đã gửi OTP cho User"
         );
         return OtpResponse.success("Otp đã được gửi đi ");
@@ -92,10 +102,28 @@ public class AuthService {
         User user = userService.findUserByUsername(username);
 
         if (user.getStatus() != UserStatus.PENDING_VERIFICATION) {
+            auditLogsService.log(
+                    user.getUserId(),
+                    user.getUsername(),
+                    AuditAction.RESEND_OTP,
+                    false,
+                    requestUtils.extractIpAddress(),
+                    requestUtils.extractUserAgent(),
+                    "Tài Khoản đã được xác thực"
+            );
             throw OtpVerifyException.business("Tài khoản đã được xác thực",0);
         }
 
         otpService.sendOtp(user, OtpType.REGISTER);
+        auditLogsService.log(
+                user.getUserId(),
+                user.getUsername(),
+                AuditAction.RESEND_OTP,
+                true,
+                requestUtils.extractIpAddress(),
+                requestUtils.extractUserAgent(),
+                "Đã cấp lại OTP Đăng Ký cho user"
+        );
         return OtpResponse.success("Vui Lòng Kiểm tra email của bạn ");
     }
 
@@ -105,6 +133,15 @@ public class AuthService {
         User user = userService.findUserByUsername(username);
 
         if (user.getStatus() != UserStatus.PENDING_VERIFICATION) {
+            auditLogsService.log(
+                    user.getUserId(),
+                    user.getUsername(),
+                    AuditAction.RESEND_OTP,
+                    false,
+                    requestUtils.extractIpAddress(),
+                    requestUtils.extractUserAgent(),
+                    "Tài Khoản Đã được xác thực"
+            );
             throw OtpVerifyException.business("Tài khoản đã được xác thực", 0);
         }
 
@@ -112,6 +149,15 @@ public class AuthService {
 
         user.setStatus(UserStatus.ACTIVE);
         userRepository.save(user);
+        auditLogsService.log(
+                user.getUserId(),
+                user.getUsername(),
+                AuditAction.RESEND_OTP,
+                true,
+                requestUtils.extractIpAddress(),
+                requestUtils.extractUserAgent(),
+                "xác nhận OTP thành công tạo tài khoản"
+        );
         log.info("User verified: {}", user.getUsername());
 
         return result;
@@ -122,10 +168,28 @@ public class AuthService {
         User user = userService.findUserByUsername(request.getUsername());
 
         if (!user.isAccountNonLocked()) {
+            auditLogsService.log(
+                    user.getUserId(),
+                    user.getUsername(),
+                    AuditAction.LOGIN_FAILED,
+                    false,
+                    requestUtils.extractIpAddress(),
+                    requestUtils.extractUserAgent(),
+                    "Đăng Nhập nhưng tài khoản bị khóa "
+            );
             throw new LockedException("Tài khoản bị khóa đến " + user.getLockedUntil());
         }
 
         if (user.getStatus() == UserStatus.PENDING_VERIFICATION) {
+            auditLogsService.log(
+                    user.getUserId(),
+                    user.getUsername(),
+                    AuditAction.LOGIN_FAILED,
+                    false,
+                    requestUtils.extractIpAddress(),
+                    requestUtils.extractUserAgent(),
+                    "Đăng nhập nhưng chưa xác thực email"
+            );
             throw new DisabledException("Tài khoản chưa được xác thực email");
         }
 

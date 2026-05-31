@@ -7,6 +7,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 
 @SpringBootApplication
 @EnableJpaAuditing
+@EnableAsync
 public class KeyApplication {
 
 	public static void main(String[] args) {

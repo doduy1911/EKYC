@@ -1,6 +1,9 @@
 package com.eyc.key.modules.auth.service;
 
+import com.eyc.key.common.audit.AuditAction;
+import com.eyc.key.common.audit.AuditLogsService;
 import com.eyc.key.common.enums.UserStatus;
+import com.eyc.key.common.util.RequestUtils;
 import com.eyc.key.modules.auth.dto.response.AuthResponse;
 import com.eyc.key.modules.auth.entity.RefreshToken;
 import com.eyc.key.modules.auth.entity.User;
@@ -23,6 +26,8 @@ public class UserService {
     private final UserRepository userRepository;
     private final JwtService jwtService;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final AuditLogsService  auditLogsService;
+    private final RequestUtils  requestUtils;
 
     @Value("${security.max-failed-attempts}")
     int maxFailedAttempts;
@@ -37,11 +42,30 @@ public class UserService {
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void handleFailedLogin(User user) {
         userRepository.incrementFailedAttempts(user.getUserId());
+        auditLogsService.log(
+                user.getUserId(),
+                user.getUsername(),
+                AuditAction.LOGIN_FAILED,
+                false,
+                requestUtils.extractIpAddress(),
+                requestUtils.extractUserAgent(),
+                "Đăng nhập sai " + user.getFailedLoginAttempts() + "lần "
+        );
         if (user.getFailedLoginAttempts() + 1 >= maxFailedAttempts) {
             user.setLockedUntil(LocalDateTime.now().plusMinutes(lockDurationMinutes));
             user.setStatus(UserStatus.LOCKED);
+            auditLogsService.log(
+                    user.getUserId(),
+                    user.getUsername(),
+                    AuditAction.LOGIN_FAILED,
+                    false,
+                    requestUtils.extractIpAddress(),
+                    requestUtils.extractUserAgent(),
+                    "Đăng nhập sai quá" + maxFailedAttempts + "lần , Tài khoản bị khóa đến " + user.getLockedUntil()
+            );
             userRepository.save(user);
         }
+
     }
 
     public AuthResponse buildAuthResponse(User user, String deviceInfo, String ipAddress) {
@@ -55,7 +79,17 @@ public class UserService {
                 .ipAddress(ipAddress)
                 .build();
 
+        auditLogsService.log(
+                user.getUserId(),
+                user.getUsername(),
+                AuditAction.LOGIN_SUCCESS,
+                true,
+                requestUtils.extractIpAddress(),
+                requestUtils.extractUserAgent(),
+                "Đăng Nhập Thành Công"
+        );
         refreshTokenRepository.save(refreshToken);
+
 
         return AuthResponse.builder()
                 .message("Đăng Nhập Thành Công")
