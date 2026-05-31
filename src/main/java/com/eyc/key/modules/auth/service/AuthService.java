@@ -1,5 +1,7 @@
 package com.eyc.key.modules.auth.service;
 
+import com.eyc.key.common.audit.AuditAction;
+import com.eyc.key.common.audit.AuditLogsService;
 import com.eyc.key.common.enums.OtpType;
 import com.eyc.key.common.enums.Role;
 import com.eyc.key.common.enums.UserStatus;
@@ -36,15 +38,29 @@ public class AuthService {
     private final RefreshTokenRepository refreshTokenRepository;
     private final AuthenticationManager authenticationManager;
     private final UserService  userService;
+    private final AuditLogsService  auditLogsService;
 
 
     @Transactional
     public OtpResponse register(ResgisterRequest resgisterRequest){
         String username = resgisterRequest.getUsername();
         if (userRepository.findByUsername(username).isPresent()){
+            auditLogsService.log(
+                    username,
+                    AuditAction.REGISTER,
+                    false,
+                    "Username đã tồn tại "
+            );
             throw new RuntimeException("Username đã tồn tại");
+
         }
         if (userRepository.findByEmail(resgisterRequest.getEmail()).isPresent()){
+            auditLogsService.log(
+                    username,
+                    AuditAction.REGISTER,
+                    true,
+                    "Email đã tồn tại "
+            );
             throw  new RuntimeException("Email đã tồn tại");
         }
 
@@ -61,7 +77,13 @@ public class AuthService {
         userRepository.save(user);
 
         otpService.sendOtp(user,OtpType.REGISTER);
-        log.info("User registered: {}", user.getUsername());
+        auditLogsService.log(
+                user.getUserId(),
+                username,
+                AuditAction.REGISTER,
+                false,
+                "Đã gửi OTP cho User"
+        );
         return OtpResponse.success("Otp đã được gửi đi ");
     }
 

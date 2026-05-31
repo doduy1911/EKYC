@@ -3,6 +3,7 @@ package com.eyc.key.common.audit;
 import java.time.LocalDate;
 import java.util.UUID;
 
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -16,11 +17,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity
 @Table(name = "audit_logs" , indexes = {
@@ -35,6 +31,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
 @Builder
+@ToString
 public class AuditLog {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -50,8 +47,8 @@ public class AuditLog {
     @Column(name = "action" , length = 50 , nullable = false)
     private AuditAction action;
 
-    @Column(name = "sucess" , nullable = false)
-    private boolean sucess;
+    @Column(name = "success" , nullable = false)
+    private boolean success;
 
     @Column(name = "description" , nullable = false)
     private String description;
@@ -65,5 +62,6 @@ public class AuditLog {
     @CreatedDate
     @Column(name = "created_at" ,updatable = false)
     private LocalDate createdAt;
+
 
 }

@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -19,6 +21,7 @@ public class AuditLogsService {
     private final AuditLogRepository auditLogRepository;
 
     @Async
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void log(UUID userId,
                     String username,
                     AuditAction auditAction,
@@ -31,16 +34,19 @@ public class AuditLogsService {
                 .userId(userId)
                 .username(username)
                 .action(auditAction)
-                .sucess(success)
+                .success(success)
                 .description(description)
                 .ipAddress(ipAddress)
                 .userAgent(userAgen)
                 .build();
+        System.out.println(auditLog);
         auditLogRepository.save(auditLog);
+        System.out.println("lưu thành cồng");
 
     }
 
     @Async
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void log(String username,
                     AuditAction action,
                     boolean success,
@@ -52,6 +58,7 @@ public class AuditLogsService {
     private String extractIpAddress(){
         try {
             ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
+            System.out.println("abc "+attrs);
             if (attrs == null) return "unknown";
             HttpServletRequest request = attrs.getRequest();
             String forwarded = request.getHeader("x-forwarded-for");
