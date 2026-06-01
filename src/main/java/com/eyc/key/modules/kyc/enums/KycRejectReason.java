@@ -6,5 +6,4 @@ public enum KycRejectReason {
     MISMATCHED_INFO,        // Thông tin không khớp
     INCOMPLETE_DOCUMENT,    // Thiếu mặt trước/sau
     SUSPECTED_FRAUD,        // Nghi ngờ giả mạo
-    OTHER
 }
