@@ -180,7 +180,6 @@ public class AuthService {
             );
             throw new LockedException("Tài khoản bị khóa đến " + user.getLockedUntil());
         }
-        System.out.println("ddax chayj den day 3");
 
 
         if (user.getStatus() == UserStatus.PENDING_VERIFICATION) {
@@ -195,12 +194,9 @@ public class AuthService {
             );
             throw new DisabledException("Tài khoản chưa được xác thực email");
         }
-        System.out.println("ddax chayj den day 4");
 
 
         try {
-            System.out.println("ddax chayj den day 11");
-
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
                             request.getUsername(), request.getPassword()));
@@ -208,7 +204,6 @@ public class AuthService {
             userService.handleFailedLogin(user);
             throw new BadCredentialsException("Sai username hoặc mật khẩu");
         }
-        System.out.println("ddax chayj den day 5");
 
 
         userRepository.resetFailedAttempts(user.getUserId());

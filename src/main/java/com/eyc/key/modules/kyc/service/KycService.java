@@ -19,6 +19,9 @@ public class KycService {
                                  MultipartFile frontImage,
                                  MultipartFile backImage,
                                  MultipartFile selfieImage) throws IOException {
+        System.out.println(request);
+        System.out.println(frontImage);
+        System.out.println(backImage);
 
         return null;
     }

@@ -22,7 +22,7 @@ public class kycController {
 
     @PostMapping(value = "/submit", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<KycResponse> submit(
-            @AuthenticationPrincipal(expression = "id") UUID userId,
+            @AuthenticationPrincipal(expression = "userId") UUID userId,
             @Valid @ModelAttribute KycSubmitRequest request,
             @RequestPart("frontImage")MultipartFile frontImage ,
             @RequestPart("backImage") MultipartFile backImage,
