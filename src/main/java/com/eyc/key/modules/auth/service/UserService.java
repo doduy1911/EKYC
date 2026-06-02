@@ -42,6 +42,8 @@ public class UserService {
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void handleFailedLogin(User user) {
         userRepository.incrementFailedAttempts(user.getUserId());
+        System.out.println("ddax chayj den day 6");
+
         auditLogsService.log(
                 user.getUserId(),
                 user.getUsername(),
@@ -51,6 +53,8 @@ public class UserService {
                 requestUtils.extractUserAgent(),
                 "Đăng nhập sai " + user.getFailedLoginAttempts() + "lần "
         );
+        System.out.println("ddax chayj den day 7");
+
         if (user.getFailedLoginAttempts() + 1 >= maxFailedAttempts) {
             user.setLockedUntil(LocalDateTime.now().plusMinutes(lockDurationMinutes));
             user.setStatus(UserStatus.LOCKED);
@@ -65,10 +69,14 @@ public class UserService {
             );
             userRepository.save(user);
         }
+        System.out.println("ddax chayj den day 8");
+
 
     }
 
     public AuthResponse buildAuthResponse(User user, String deviceInfo, String ipAddress) {
+        System.out.println("ddax chayj den day1");
+
         String accessToken = jwtService.generateAccessToken(user);
         String rawRefreshToken = UUID.randomUUID().toString();
         RefreshToken refreshToken = RefreshToken.builder()
@@ -90,7 +98,7 @@ public class UserService {
         );
         refreshTokenRepository.save(refreshToken);
 
-
+        System.out.println("ddax chayj den day");
         return AuthResponse.builder()
                 .message("Đăng Nhập Thành Công")
                 .accessToken(accessToken)
