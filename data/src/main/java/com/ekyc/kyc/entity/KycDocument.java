@@ -28,7 +28,7 @@ public class KycDocument {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "document_type", nullable = false, length = 20)
-    private DocumentType documentType;  // FRONT, BACK, SELFIE
+    private DocumentType documentType;  // FRONT, BACK, SELFIEArrayList
 
     @Column(name = "file_name", nullable = false, length = 255)
     private String fileName;            // Tên file gốc
