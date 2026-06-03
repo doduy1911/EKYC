@@ -53,9 +53,14 @@ public class KycService {
                 .idExpiryDate(request.getIdExpiryDate())
                 .status(KycStatus.DRAFT)
                 .build();
-//        kycSubmissionRepository.save(kycSubmission);
+        kycSubmissionRepository.save(kycSubmission);
 
         saveDocument(kycSubmission,frontImage, DocumentType.FRONT);
+        saveDocument(kycSubmission, backImage, DocumentType.BACK);
+
+        if (selfieImage != null && !selfieImage.isEmpty()){
+            saveDocument(kycSubmission,selfieImage,DocumentType.SELFIE);
+        }
 
         return null;
     }
