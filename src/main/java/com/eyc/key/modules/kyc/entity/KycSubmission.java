@@ -72,6 +72,8 @@ public class KycSubmission {
 
     @Column(name = "reviewed_by")
     private UUID reviewedBy;  // UUID của người review
+    @Column(name = "reviewed_at")
+    private LocalDateTime reviewedAt;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "reject_reason", length = 50)
@@ -85,7 +87,7 @@ public class KycSubmission {
     private int submissionCount = 0; // đêm số lần nộp tối đa (Tối đa 3 lần )
 
     @Column(name = "submitted_at")
-    private LocalDate submittedAt; // gian gian noopj
+    private LocalDateTime submittedAt; // gian gian noopj
 
 
     @OneToMany(mappedBy = "kycSubmission", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)

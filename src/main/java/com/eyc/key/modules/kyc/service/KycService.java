@@ -19,6 +19,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -70,22 +72,17 @@ public class KycService {
         }
         transition(kycSubmission, KycStatus.SUBMITTED , userId , TriggeredByRole.USER , null);
 
-        kycSubmission.setSubmittedAt(LocalDate.now());
+        kycSubmission.setSubmittedAt(LocalDateTime.now());
         kycSubmission.setSubmissionCount(kycSubmission.getSubmissionCount() + 1 );
         kycSubmissionRepository.save(kycSubmission);
-
-
-
-
-
-        return null;
+        return toResponse(kycSubmission);
     }
 
     private void saveDocument(KycSubmission submission,
                               MultipartFile file,
                               DocumentType type) throws IOException {
         KycDocument doc = kycFileService.saveFile(file,submission.getUserId(),type);
-        System.out.println("doc"+ doc);
+//        System.out.println("doc"+ doc);
         doc.setKycSubmission(submission);
         kycDocumentRepository.save(doc);
     }
@@ -104,6 +101,41 @@ public class KycService {
                 .build();
 
         kycStateLogRepository.save(log);
+    }
+
+
+    private KycResponse toResponse(KycSubmission s ){
+        List<KycResponse.DocumentInfo> docs = kycDocumentRepository
+                .findByKycSubmissionId(s.getId())
+                .stream()
+                .map(d -> KycResponse.DocumentInfo.builder()
+                        .id(d.getId())
+                        .documentType(d.getDocumentType().name())
+                        .fileName(d.getFileName())
+                        .uploadedAt(d.getUploadedAt())
+                        .build()
+                )
+                .toList();
+
+        return KycResponse.builder()
+                .id(s.getId())
+                .userId(s.getUserId())
+                .fullName(s.getFullName())
+                .identityNumber(s.getIdentityNumber())
+                .dateOfBirth(s.getDateOfBirth())
+                .gender(s.getGender())
+                .nationality(s.getNationality())
+                .placeOfOrigin(s.getPlaceOfOrigin())
+                .placeOfResidence(s.getPlaceOfOrigin())
+                .idIssueDate(s.getIdIssueDate())
+                .idExpiryDate(s.getIdExpiryDate())
+                .status(s.getStatus())
+                .previousStatus(s.getPreviousStatus())
+                .rejectReason(s.getRejectReason())
+                .rejectNote(s.getRejectNote())
+                .submissionCount(s.getSubmissionCount())
+                .submittedAt(s.getSubmittedAt())
+                .build();
     }
 
 
