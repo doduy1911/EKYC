@@ -17,8 +17,10 @@ import java.util.List;
 import java.util.UUID;
 
 @Entity
-@Table(name = " kyc_submissions", indexes = {
-        @Index(name = "idx_kyc_userId", columnList = "userId")
+@Table(name = "kyc_submissions", indexes = {
+        @Index(name = "idx_kyc_userId", columnList = "userId"),
+        @Index(name = "idx_kyc_status" , columnList = "status"),
+        @Index(name = "idx_kyc_identity_number", columnList = "identity_number")
 })
 @EntityListeners(AuditingEntityListener.class)
 @Getter
