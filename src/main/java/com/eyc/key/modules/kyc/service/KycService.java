@@ -3,9 +3,11 @@ package com.eyc.key.modules.kyc.service;
 import com.eyc.key.modules.kyc.dto.Response.KycResponse;
 import com.eyc.key.modules.kyc.dto.request.KycSubmitRequest;
 import com.eyc.key.modules.kyc.entity.KycDocument;
+import com.eyc.key.modules.kyc.entity.KycStateLog;
 import com.eyc.key.modules.kyc.entity.KycSubmission;
 import com.eyc.key.modules.kyc.enums.DocumentType;
 import com.eyc.key.modules.kyc.enums.KycStatus;
+import com.eyc.key.modules.kyc.enums.TriggeredByRole;
 import com.eyc.key.modules.kyc.repository.KycSubmissionRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -62,6 +64,8 @@ public class KycService {
             saveDocument(kycSubmission,selfieImage,DocumentType.SELFIE);
         }
 
+
+
         return null;
     }
 
@@ -71,5 +75,10 @@ public class KycService {
         KycDocument doc = kycFileService.saveFile(file,submission.getUserId(),type);
         System.out.println("doc"+ doc);
 //        doc.setKycSubmission(submission);
+    }
+
+    private void  transition(KycSubmission submission, KycStatus newStatus , UUID triggeredBy , TriggeredByRole role , String note) {
+        KycStatus oldStatus = submission.getStatus();
+        System.out.println(oldStatus);
     }
 }

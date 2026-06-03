@@ -67,7 +67,7 @@ public class KycSubmission {
     private KycStatus status = KycStatus.DRAFT; // Trạng thái hiện tại mặc định là bản nháp khi mới nộp
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 30)
+    @Column(name = "previous_status")
     private KycStatus previousStatus;  // Trạng thái tiếp theo
 
     @Column(name = "reviewed_by")
