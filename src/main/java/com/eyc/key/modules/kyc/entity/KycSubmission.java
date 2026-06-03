@@ -35,7 +35,7 @@ public class KycSubmission {
     private UUID id;
 
     @Column(name = "userId", nullable = false)
-    private String userId;
+    private UUID userId;
 
     @Column(name = "fullName", nullable = false, length = 100)
     private String fullName;
@@ -97,8 +97,8 @@ public class KycSubmission {
     private List<KycStateLog> stateLogs = new ArrayList<>();
 
     @CreatedDate
-    @Column(name = "create_at" , updatable = false)
-    private LocalDateTime createAt;
+    @Column(name = "created_at" , updatable = false)
+    private LocalDateTime createdAt;
 
     @LastModifiedDate
     @Column(name = "update_at")

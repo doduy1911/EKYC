@@ -1,6 +1,7 @@
 package com.eyc.key.modules.kyc.entity;
 
 
+import com.eyc.key.modules.kyc.enums.DocumentType;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
@@ -26,6 +27,10 @@ public class KycDocument {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "Kyc_submission_id" , nullable = false)
     private KycSubmission kycSubmission;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "document_type" , nullable = false , length = 20)
+    private DocumentType documentType;
 
     @Column(name = "file_name", nullable = false, length = 255)
     private String fileName;            // Tên file gốc
