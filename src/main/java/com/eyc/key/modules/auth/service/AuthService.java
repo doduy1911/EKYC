@@ -166,6 +166,7 @@ public class AuthService {
     @Transactional
     public AuthResponse login(LoginRequest request) {
         User user = userService.findUserByUsername(request.getUsername());
+        System.out.println("ddax chayj den day 0");
 
         if (!user.isAccountNonLocked()) {
             auditLogsService.log(
@@ -180,6 +181,7 @@ public class AuthService {
             throw new LockedException("Tài khoản bị khóa đến " + user.getLockedUntil());
         }
 
+
         if (user.getStatus() == UserStatus.PENDING_VERIFICATION) {
             auditLogsService.log(
                     user.getUserId(),
@@ -193,6 +195,7 @@ public class AuthService {
             throw new DisabledException("Tài khoản chưa được xác thực email");
         }
 
+
         try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
@@ -201,6 +204,7 @@ public class AuthService {
             userService.handleFailedLogin(user);
             throw new BadCredentialsException("Sai username hoặc mật khẩu");
         }
+
 
         userRepository.resetFailedAttempts(user.getUserId());
         return userService.buildAuthResponse(user, request.getDeviceInfo(), null);

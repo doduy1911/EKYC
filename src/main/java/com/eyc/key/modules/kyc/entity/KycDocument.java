@@ -24,7 +24,7 @@ public class KycDocument {
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "kyc_submission_id" , nullable = false)
+    @JoinColumn(name = "Kyc_submission_id" , nullable = false)
     private KycSubmission kycSubmission;
 
     @Column(name = "file_name", nullable = false, length = 255)
@@ -45,6 +45,7 @@ public class KycDocument {
     @CreatedDate
     @Column(name = "uploaded_at", updatable = false)
     private LocalDateTime uploadedAt;
+
 
 
 

@@ -6,9 +6,14 @@ import com.eyc.key.modules.kyc.enums.KycStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.cglib.core.Local;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -80,6 +85,32 @@ public class KycSubmission {
     @Column(name = "submitted_at")
     private LocalDate submittedAt; // gian gian noopj
 
+
+    @OneToMany(mappedBy = "kycSubmission", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @Builder.Default
+    private List<KycDocument> documents = new ArrayList<>();
+
+    @OneToMany(mappedBy = "kycSubmission", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @Builder.Default
+    private List<KycStateLog> stateLogs = new ArrayList<>();
+
+    @CreatedDate
+    @Column(name = "create_at" , updatable = false)
+    private LocalDateTime createAt;
+
+    @LastModifiedDate
+    @Column(name = "update_at")
+    private LocalDateTime updateAt;
+
+
+    public void transitionTo(KycStatus newStatus){
+        if (!this.status.canTransitionTo(newStatus)){
+            throw new IllegalStateException(
+                    String.format("không thể chuyển từ %s sàn %s ", this.status, newStatus)
+            );}
+        this.previousStatus = this.status;
+        this.status = newStatus;
+    }
 
 }
 
