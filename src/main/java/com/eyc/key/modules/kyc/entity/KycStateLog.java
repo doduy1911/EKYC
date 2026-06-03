@@ -31,6 +31,10 @@ public class KycStateLog {
     @Column(name = "from_status" , length = 30)
     private KycStatus kycStatus;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "to_status", nullable = false, length = 30)
+    private KycStatus toStatus;
+
     @Column(name = "triggered_by" )
     private UUID triggeredBy;
 
