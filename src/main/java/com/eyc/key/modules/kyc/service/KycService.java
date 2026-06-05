@@ -78,6 +78,14 @@ public class KycService {
         return toResponse(kycSubmission);
     }
 
+    public KycResponse getMyKyc(UUID userId){
+        KycSubmission submission = kycSubmissionRepository
+                .findTopByUserIdOrderByCreatedAtDesc(userId)
+                .orElseThrow(() -> new RuntimeException("Bạn chưa nộp Hồ sơ "));
+
+        return toResponse(submission);
+    }
+
     private void saveDocument(KycSubmission submission,
                               MultipartFile file,
                               DocumentType type) throws IOException {
@@ -137,6 +145,8 @@ public class KycService {
                 .submittedAt(s.getSubmittedAt())
                 .build();
     }
+
+
 
 
 

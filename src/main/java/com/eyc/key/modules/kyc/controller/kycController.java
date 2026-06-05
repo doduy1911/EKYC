@@ -34,6 +34,13 @@ public class kycController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/me")
+    public ResponseEntity<KycResponse> getMyKyc(
+            @AuthenticationPrincipal(expression ="userId") UUID userId) {
+
+        return ResponseEntity.ok(kycService.getMyKyc(userId));
+    }
+
 
 
 }
