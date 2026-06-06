@@ -5,7 +5,7 @@ import com.eyc.key.modules.kyc.enums.KycStatus;
 import com.eyc.key.modules.kyc.service.KycService;
 import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.query.Page;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -28,7 +28,10 @@ public class KycAdminController {
             @RequestParam(required = false) KycStatus status,
             @PageableDefault(size = 20 ,sort = "CreatedAt") Pageable pageable
     ){
-        return null;
+        if (status != null ){
+            return  ResponseEntity.ok(kycService.getSubmissionsByStatus(status,pageable));
+        }
+        return ResponseEntity.ok(kycService.getAllSubmissions(pageable));
     }
 
 }

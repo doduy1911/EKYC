@@ -3,6 +3,9 @@ package com.eyc.key.modules.kyc.repository;
 
 import com.eyc.key.modules.kyc.entity.KycSubmission;
 import com.eyc.key.modules.kyc.enums.KycStatus;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -22,6 +25,12 @@ public interface KycSubmissionRepository extends JpaRepository<KycSubmission , U
     boolean hasActiveSubmission(UUID userId);
 
     Optional<KycSubmission> findTopByUserIdOrderByCreatedAtDesc(UUID userId);
+
+
+    Page<KycSubmission> findByStatus(KycStatus status, Pageable pageable);
+    Page<KycSubmission> findAllByOrderByCreatedAtDesc(Pageable pageable);
+
+
 
 
 }

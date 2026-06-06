@@ -14,6 +14,8 @@ import com.eyc.key.modules.kyc.repository.KycSubmissionRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -144,6 +146,22 @@ public class KycService {
                 .submissionCount(s.getSubmissionCount())
                 .submittedAt(s.getSubmittedAt())
                 .build();
+    }
+    public Page<KycResponse> getAllSubmissions(Pageable pageable) {
+        return kycSubmissionRepository.findAllByOrderByCreatedAtDesc(pageable)
+                .map(this::toResponse);
+    }
+
+    public Page<KycResponse> getSubmissionsByStatus(KycStatus status, Pageable pageable) {
+            return kycSubmissionRepository.findByStatus(status,pageable).map(this::toResponse);
+    }
+
+    public KycResponse getSubmissionById(UUID submissionId) {
+        return toResponse(findSubmission(submissionId));
+    }
+    private KycSubmission findSubmission(UUID id) {
+        return kycSubmissionRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy hồ sơ KYC"));
     }
 
 
