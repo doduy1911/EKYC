@@ -1,6 +1,7 @@
 package com.eyc.key.modules.kyc.service;
 
 import com.eyc.key.modules.kyc.dto.Response.KycResponse;
+import com.eyc.key.modules.kyc.dto.request.KycReviewRequest;
 import com.eyc.key.modules.kyc.dto.request.KycSubmitRequest;
 import com.eyc.key.modules.kyc.entity.KycDocument;
 import com.eyc.key.modules.kyc.entity.KycStateLog;
@@ -35,6 +36,7 @@ public class KycService {
     private final KycStateLogRepository kycStateLogRepository;
     private final KycFileService kycFileService;
     private final KycDocumentRepository kycDocumentRepository;
+    private  final KycEmailService kycEmailService;
     @Transactional
     public KycResponse submitKyc(UUID userId,
                                  KycSubmitRequest request,
@@ -163,6 +165,47 @@ public class KycService {
         return kycSubmissionRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy hồ sơ KYC"));
     }
+
+    @Transactional
+    public KycResponse startReview(UUID submissionId , UUID reviewerId){
+        KycSubmission submission = findSubmission(submissionId);
+
+        transition(submission,KycStatus.UNDER_REVIEW,reviewerId,TriggeredByRole.STAFF,"Bắt Đầu Review");
+
+        submission.setReviewedBy(reviewerId);
+        kycSubmissionRepository.save(submission);
+        return toResponse(submission);
+    }
+
+    @Transactional
+    public KycResponse reviewKyc(UUID submissionId , UUID reviewerId , KycReviewRequest request){
+        KycSubmission kycSubmission = findSubmission(submissionId);
+        KycStatus decision = request.getDecision();
+
+        if (decision != KycStatus.APPROVED
+                && decision != KycStatus.REJECTED
+                && decision != KycStatus.RESUBMIT_REQUIRED) {
+            throw new RuntimeException("Decision không hợp lệ");
+        }
+
+        if (decision == KycStatus.REJECTED && request.getRejectReason() == null) {
+            throw new RuntimeException("Phải có lý do từ chối");
+        }
+        transition(kycSubmission, decision, reviewerId,
+                TriggeredByRole.ADMIN, request.getNote());
+
+        kycSubmission.setReviewedBy(reviewerId);
+        kycSubmission.setReviewedAt(LocalDateTime.now());
+        kycSubmission.setRejectReason(request.getRejectReason());
+        kycSubmission.setRejectNote(request.getNote());
+        kycSubmissionRepository.save(kycSubmission);
+        kycEmailService.sendReviewResultEmail(kycSubmission);
+
+        log.info("KYC {} by reviewer: {}", decision, reviewerId);
+        return toResponse(kycSubmission);
+
+    }
+
 
 
 

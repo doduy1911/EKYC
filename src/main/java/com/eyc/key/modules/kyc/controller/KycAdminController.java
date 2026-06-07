@@ -1,6 +1,7 @@
 package com.eyc.key.modules.kyc.controller;
 
 import com.eyc.key.modules.kyc.dto.Response.KycResponse;
+import com.eyc.key.modules.kyc.dto.request.KycReviewRequest;
 import com.eyc.key.modules.kyc.enums.KycStatus;
 import com.eyc.key.modules.kyc.service.KycService;
 import jakarta.validation.constraints.Size;
@@ -11,10 +12,11 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/staff/kyc")
@@ -33,5 +35,26 @@ public class KycAdminController {
         }
         return ResponseEntity.ok(kycService.getAllSubmissions(pageable));
     }
+
+    // xem chi tiết 1 submission
+    @GetMapping("/{userId}")
+    public ResponseEntity<KycResponse> getById(@PathVariable UUID userId) {
+        return ResponseEntity.ok(kycService.getSubmissionById(userId));
+    }
+
+    @PutMapping("/{userId}/start-review")
+    public ResponseEntity<KycResponse> startReview(
+            @PathVariable UUID userId,
+            @AuthenticationPrincipal(expression = "userId") UUID reviewerId) {
+        return ResponseEntity.ok(kycService.startReview(userId, reviewerId));
+    }
+    @PutMapping("/{submissionId}/review")
+    public ResponseEntity<KycResponse> review(
+            @PathVariable UUID submissionId,
+            @AuthenticationPrincipal(expression = "userId") UUID reviewerId,
+            @Validated @RequestBody KycReviewRequest request) {
+        return ResponseEntity.ok(kycService.reviewKyc(submissionId, reviewerId, request));
+    }
+
 
 }
