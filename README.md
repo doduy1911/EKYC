@@ -67,7 +67,7 @@ src/
 ## Getting Started
 
 ### Prerequisites
-- Java 21+
+- Java 17+
 - Docker & Docker Compose
 
 ### Run with Docker Compose
