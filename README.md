@@ -8,7 +8,7 @@ Backend hệ thống định danh điện tử (eKYC) phục vụ quy trình onb
 
 | Layer | Technology |
 |---|---|
-| Language | Java 21 |
+| Language | Java 17 |
 | Framework | Spring Boot 3, Spring Security, Spring Data JPA |
 | Database | PostgreSQL |
 | Auth | JWT, Refresh Token, BCrypt |
