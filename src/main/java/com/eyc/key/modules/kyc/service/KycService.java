@@ -147,6 +147,10 @@ public class KycService {
                 .rejectNote(s.getRejectNote())
                 .submissionCount(s.getSubmissionCount())
                 .submittedAt(s.getSubmittedAt())
+                .reviewedAt(s.getReviewedAt())
+                .documents(docs)
+                .createdAt(s.getCreatedAt())
+                .updatedAt(s.getUpdateAt())
                 .build();
     }
     public Page<KycResponse> getAllSubmissions(Pageable pageable) {
